@@ -2,6 +2,8 @@ package ait.cars.dao;
 
 import ait.cars.model.Car;
 
+import java.util.function.Predicate;
+
 public class GarageImpl implements Garage {
 
     private Car [] cars;
@@ -17,8 +19,7 @@ public class GarageImpl implements Garage {
         if (car == null || findCarByRegNumber(car.getRegNumber()) != null || cars.length == size){
             return false;
         }
-        cars[size] = car;
-        size++;
+        cars[size++] = car;
         return true;
     }
 
@@ -27,9 +28,8 @@ public class GarageImpl implements Garage {
         for (int i = 0; i < size; i++) {
             if (cars[i].getRegNumber().equals(regNumber)) {
                 Car victim = cars[i];
-                cars[i] = cars[size - 1];
-                cars[size - 1] = null;
-                size--;
+                cars[i] = cars[--size];
+                cars[size] = null;
                 return victim;
             }
         }
@@ -48,78 +48,52 @@ public class GarageImpl implements Garage {
 
     @Override
     public Car[] findCarsByModel(String model) {
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if(cars[i].getModel().equals(model)){
-                count++;
-            }
-        }
-        Car [] res = new Car [count];
-        for (int i = 0, j = 0; j < res.length; i++) {
-            if(cars[i].getModel().equals(model)){
-                res[j] = cars[i];
-                j++;
-            }
-        }
-        return res;
+        Predicate<Car> predicate = new ModelsPredicate(model);
+        return findEmployeesByPredicate(predicate);
     }
 
     @Override
     public Car[] findCarsByCompany(String company) {
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if(cars[i].getCompany().equals(company)){
-                count++;
+        Predicate<Car> predicate = new Predicate<Car>() {
+            @Override
+            public boolean test(Car car) {
+                return car.getCompany().equals(company);
             }
-        }
-        Car [] res = new Car [count];
-        for (int i = 0, j = 0; j < res.length; i++) {
-            if(cars[i].getCompany().equals(company)){
-                res[j] = cars[i];
-                j++;
-            }
-        }
-        return res;
+        };
+        return findEmployeesByPredicate(predicate);
     }
 
     @Override
     public Car[] findCarsByEngine(double min, double max) {
-        int count = 0;
-        for (int i = 0; i < size; i++) {
-            if(cars[i].getEngine() >= min && cars[i].getEngine() < max){
-                count++;
+        Predicate<Car> predicate = new Predicate<Car>() {
+            @Override
+            public boolean test(Car car) {
+                return car.getEngine() >= min && car.getEngine() < max;
             }
-        }
-        Car [] res = new Car [count];
-        for (int i = 0, j = 0; j < res.length; i++) {
-            if(cars[i].getEngine() >= min && cars[i].getEngine() < max){
-                res[j] = cars[i];
-                j++;
-            }
-        }
-        return res;
+        };
+        return findEmployeesByPredicate(predicate);
     }
 
     @Override
     public Car[] findCarsByColor(String color) {
+        Predicate<Car> predicate = car -> car.getColor().equals(color);
+        return findEmployeesByPredicate(predicate);
+    }
+
+    private Car[] findEmployeesByPredicate(Predicate<Car> predicate){
         int count = 0;
         for (int i = 0; i < size; i++) {
-            if(cars[i].getColor().equals(color)){
+            if(predicate.test(cars[i])){
                 count++;
             }
         }
         Car [] res = new Car [count];
         for (int i = 0, j = 0; j < res.length; i++) {
-            if(cars[i].getColor().equals(color)){
+            if(predicate.test(cars[i])){
                 res[j] = cars[i];
                 j++;
             }
         }
         return res;
-    }
-
-    @Override
-    public int quantity() {
-        return size;
     }
 }
