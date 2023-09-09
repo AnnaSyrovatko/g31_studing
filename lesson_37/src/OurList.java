@@ -14,7 +14,7 @@ public interface OurList<E>{
 
         E removeById(int index);
 
-        void listToString();
+        void printList();
 
 
 

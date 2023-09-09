@@ -106,7 +106,7 @@ public class OurLinkedList<E> implements OurList<E>{
     }
 
     @Override
-    public void listToString() {
+    public void printList() {
         if (size == 0) {
             System.out.println("List is empty");
         } else {
