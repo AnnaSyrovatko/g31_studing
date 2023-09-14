@@ -14,9 +14,6 @@ public class Students {
         Set<String> keys = new HashSet<>(attendance);
 
         Map<String, Integer> map = new HashMap<>();
-
-
-
         for (String key: keys) {
             int size = 0;
             for (String student: attendance) {
@@ -30,4 +27,6 @@ public class Students {
 
         System.out.println(map);
     }
+
+
 }
